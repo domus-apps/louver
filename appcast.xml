@@ -27,5 +27,21 @@
         sparkle:edSignature="poaT7yIvTHQ2IKqEn7piqddXuuX0lR1NcaDsL6/WZPgBUA7ezjrA10CNEEPAWq1vpSF4VzThLEGINZYiotRRAQ==" length="3138505"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Louver v1.0.1</title>
+      <link>https://github.com/domus-apps/louver/releases/tag/v1.0.1</link>
+      <pubDate>Sun, 30 Aug 2026 14:46:56 +0000</pubDate>
+      <description><![CDATA[
+<ul>
+<li>Tightened the gap between the volume sliders and the menu items below them.</li>
+</ul>      ]]></description>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/louver/releases/download/v1.0.1/Louver.zip"
+        sparkle:edSignature="n2Q69Wkqd6AwPfBHWz2uHmF9/PSSlNCwqIVCgfLXdvLx5Sdupym1B8Hc1XDT2qxSqsPpK9sK7TNOY5HMsgk6CQ==" length="3138530"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
