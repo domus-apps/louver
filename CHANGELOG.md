@@ -1,3 +1,16 @@
 # Changelog
 
-## Unreleased
+All notable changes to Louver are documented here. The release workflow publishes each version's section as the GitHub release notes and embeds it in the Sparkle appcast, so the in-app update dialog shows the same notes. A release fails early if its version has no section here.
+
+Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
+
+## 1.0.0
+
+The first release.
+
+- A volume slider and mute for every app, right in the menu bar — the one control macOS never shipped.
+- Built on Core Audio process taps: no drivers, no kernel extensions, nothing to install beyond the app.
+- Apps at full volume are untouched — their audio passes straight through the system as if Louver weren't running.
+- Chrome- and Electron-style helper processes are grouped under the app you actually see.
+- Volumes are remembered per app and reapplied when the app plays again, across relaunches.
+- Follows the default output everywhere: switch to AirPods mid-song and the levels come along.

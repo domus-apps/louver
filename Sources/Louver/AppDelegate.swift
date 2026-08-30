@@ -32,9 +32,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         engine.onPermissionFailure = { [weak self] in
             self?.showOnboarding()
         }
-        let engineChanged = engine.onChange
         engine.onChange = { [weak self] in
-            engineChanged?()
+            self?.volumeMenu?.refreshRows()
             self?.updateStatusIcon()
         }
 

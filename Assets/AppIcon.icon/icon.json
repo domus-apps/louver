@@ -1,14 +1,10 @@
 {
   "fill": {
-    "automatic-gradient": "extended-srgb:0.45490,0.73333,0.19608,1.00000"
+    "automatic-gradient": "extended-srgb:0.43529,0.75294,0.22745,1.00000"
   },
   "groups": [
     {
       "layers": [
-        {
-          "image-name": "back.png",
-          "name": "back"
-        },
         {
           "image-name": "front.png",
           "name": "front"

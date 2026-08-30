@@ -92,17 +92,19 @@ func drawIconBackground(_ cg: CGContext) {
     cg.saveGState()
     cg.setShadow(offset: CGSize(width: 0, height: -12), blur: 36, color: color(0x000000, 0.28))
     cg.addPath(shape)
-    cg.setFillColor(color(0x63AC28))
+    cg.setFillColor(color(0x5FA332))
     cg.fillPath()
     cg.restoreGState()
 
     /* A single restrained leaf-green gradient, in the language of macOS
        system icons and the sibling apps (Coffer: 4FE3A2→0FA25F, Oriel:
-       5AAEFF→1C66EC): both stops stay vivid and saturated — the field
-       reads as one solid color with depth, never light-fading-to-dark. */
+       5AAEFF→1C66EC). What makes the family look: BOTH stops highly
+       saturated (siblings sample at S≈80–98%) with a modest lightness
+       drop (ΔL≈20%) — one juicy solid color with depth, never a light
+       tone fading into a dark or muted one. */
     linearGradient(
         cg, in: shape,
-        colors: [color(0x9BD948), color(0x4C9C1D)],
+        colors: [color(0x9CDE58), color(0x46AD1F)],
         from: CGPoint(x: 512, y: bgRect.maxY), to: CGPoint(x: 512, y: bgRect.minY)
     )
     // Barely-there top light for depth
@@ -154,11 +156,16 @@ func drawGlassShape(
 }
 
 // The glyph: four louver slats — frosted glass bars, each tilted the few
-// degrees an opened louver sits at, over warm light pouring through from
-// behind. The slats meter the light the way Louver meters each app's sound.
+// degrees an opened louver sits at — each carrying a slider knob at its own
+// position: the louver that meters light is also the mixer that meters
+// each app's sound.
 let slatCenterYs: [CGFloat] = [710, 580, 450, 320]
 let slatSize = CGSize(width: 520, height: 76)
 let slatTilt: CGFloat = -6 * .pi / 180
+/* Knob positions along each slat (top slat first) — staggered like a
+   mixing desk mid-session. */
+let knobFractions: [CGFloat] = [0.76, 0.38, 0.64, 0.28]
+let knobDiameter: CGFloat = 104
 
 func slatPath(centerY: CGFloat) -> CGPath {
     let rect = CGRect(
@@ -176,22 +183,53 @@ func slatBounds(centerY: CGFloat) -> CGRect {
     slatPath(centerY: centerY).boundingBox
 }
 
-/// The warm light behind the slats, drawn on the background before any
-/// glass: the frosted slats blur *lit* air, not a plain gradient.
-func drawLight(_ cg: CGContext) {
-    radialBlob(cg, center: CGPoint(x: 512, y: 515), radius: 340, color: color(0xFFF6C9, 0.55))
-    radialBlob(cg, center: CGPoint(x: 512, y: 515), radius: 170, color: color(0xFFFBE4, 0.5))
+/* The knob's center, `fraction` of the way along the tilted slat. */
+func knobCenter(centerY: CGFloat, fraction: CGFloat) -> CGPoint {
+    let along = (fraction - 0.5) * (slatSize.width - knobDiameter)
+    return CGPoint(
+        x: 512 + cos(slatTilt) * along,
+        y: centerY + sin(slatTilt) * along)
+}
+
+func knobPath(centerY: CGFloat, fraction: CGFloat) -> CGPath {
+    let center = knobCenter(centerY: centerY, fraction: fraction)
+    return CGPath(
+        ellipseIn: CGRect(
+            x: center.x - knobDiameter / 2, y: center.y - knobDiameter / 2,
+            width: knobDiameter, height: knobDiameter), transform: nil)
+}
+
+/* A slider thumb: solid near-white disc with a soft shadow, sitting proud
+   of the frosted track — flat like Pharos's beacon, so it stays crisp at
+   small sizes. */
+func drawKnob(_ cg: CGContext, centerY: CGFloat, fraction: CGFloat) {
+    let path = knobPath(centerY: centerY, fraction: fraction)
+
+    cg.saveGState()
+    cg.setShadow(offset: CGSize(width: 0, height: -10), blur: 22, color: color(0x1C3A08, 0.35))
+    cg.addPath(path)
+    cg.setFillColor(color(0xFFFFFF))
+    cg.fillPath()
+    cg.restoreGState()
+
+    linearGradient(
+        cg, in: path,
+        colors: [color(0xFFFFFF), color(0xE4EED4)],
+        from: CGPoint(x: 512, y: centerY + knobDiameter / 2),
+        to: CGPoint(x: 512, y: centerY - knobDiameter / 2)
+    )
 }
 
 func drawSlats(_ cg: CGContext, backdrop: CGImage, boost: Bool) {
-    for centerY in slatCenterYs {
+    for (centerY, fraction) in zip(slatCenterYs, knobFractions) {
         drawGlassShape(
             cg, path: slatPath(centerY: centerY), bounds: slatBounds(centerY: centerY),
             backdrop: backdrop,
-            tintTop: boost ? 0.96 : 0.9, tintBottom: boost ? 0.86 : 0.72,
-            rimWidth: 5, rimTop: 1.0, rimBottom: 0.28,
+            tintTop: boost ? 0.82 : 0.72, tintBottom: boost ? 0.7 : 0.54,
+            rimWidth: 5, rimTop: 0.9, rimBottom: 0.24,
             shadowBlur: 34, shadowAlpha: 0.3
         )
+        drawKnob(cg, centerY: centerY, fraction: fraction)
     }
 }
 
@@ -221,12 +259,11 @@ func makeIcon(px: Int) -> NSBitmapImageRep {
         cg.restoreGState()
     }
 
-    // Scene 1: background + the warm light the slats will frost over.
+    // Scene 1: the background the slats will frost over.
     let bgRep = makeBitmap(px, px)
     withContext(bgRep) { cg in
         cg.scaleBy(x: scale, y: scale)
         drawIconBackground(cg)
-        drawGlyph(cg) { drawLight($0) }
     }
     let backdrop = gaussianBlur(bgRep.cgImage!, radius: blurRadius)
 
@@ -257,14 +294,17 @@ func makeIconLayer(_ draw: (CGContext) -> Void) -> NSBitmapImageRep {
     return rep
 }
 
-func drawFlatLight(_ cg: CGContext) {
-    drawLight(cg)
-}
-
 func drawFlatSlats(_ cg: CGContext) {
-    cg.setFillColor(color(0xFFFFFF))
+    /* Tracks slightly translucent, knobs solid — the same two-tone reading
+       the rendered icon has, flattened for Icon Composer. */
+    cg.setFillColor(color(0xFFFFFF, 0.78))
     for centerY in slatCenterYs {
         cg.addPath(slatPath(centerY: centerY))
+    }
+    cg.fillPath()
+    cg.setFillColor(color(0xFFFFFF))
+    for (centerY, fraction) in zip(slatCenterYs, knobFractions) {
+        cg.addPath(knobPath(centerY: centerY, fraction: fraction))
     }
     cg.fillPath()
 }
@@ -342,10 +382,12 @@ let pillLabels = ["A slider per app", "Mute anything", "No drivers"]
 func drawBanner(_ cg: CGContext, icon: CGImage) {
     let canvas = CGRect(x: 0, y: 0, width: 1800, height: 600)
     let frame = CGPath(roundedRect: canvas, cornerWidth: 40, cornerHeight: 40, transform: nil)
-    // Same dark navy as the siblings' banners: one family, many accents.
+    /* The family rule: each banner is a deep tint of the app's own key
+       color (Coffer 122E24, Jamb 0E2C2E, Keystone 30130A) — here Louver's
+       leaf green, darkened. */
     linearGradient(
         cg, in: frame,
-        colors: [color(0x1E1844), color(0x0F0B26)],
+        colors: [color(0x1C300E), color(0x0E1806)],
         from: CGPoint(x: canvas.midX, y: canvas.maxY), to: CGPoint(x: canvas.midX, y: canvas.minY)
     )
 
@@ -389,7 +431,7 @@ func drawSocialPreview(_ cg: CGContext, icon: CGImage) {
     // corners itself, so transparent corners would show through as white.
     linearGradient(
         cg, in: CGPath(rect: canvas, transform: nil),
-        colors: [color(0x241D52), color(0x0F0B26)],
+        colors: [color(0x223A11), color(0x0E1806)],
         from: CGPoint(x: canvas.midX, y: canvas.maxY), to: CGPoint(x: canvas.midX, y: canvas.minY)
     )
 
@@ -448,9 +490,9 @@ for (name, px) in iconSizes {
 let master = makeIcon(px: 1024)
 savePNG(master, "Assets/icon-1024.png")
 
-// Icon Composer layers for the macOS 26+ .icon document
+// Icon Composer layer for the macOS 26+ .icon document (front only — the
+// fill gradient in icon.json is the whole background)
 try? fm.createDirectory(atPath: "Assets/AppIcon.icon/Assets", withIntermediateDirectories: true)
-savePNG(makeIconLayer(drawFlatLight), "Assets/AppIcon.icon/Assets/back.png")
 savePNG(makeIconLayer(drawFlatSlats), "Assets/AppIcon.icon/Assets/front.png")
 
 let bannerIcon = makeIcon(px: 728).cgImage!
