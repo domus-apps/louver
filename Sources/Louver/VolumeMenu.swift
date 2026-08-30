@@ -176,7 +176,7 @@ private final class AppVolumeRowView: NSView {
 
     init(model: VolumeRowModel, width: CGFloat) {
         self.model = model
-        super.init(frame: NSRect(x: 0, y: 0, width: width, height: 62))
+        super.init(frame: NSRect(x: 0, y: 0, width: width, height: 56))
 
         let iconView = NSImageView(image: model.icon ?? NSImage())
         iconView.imageScaling = .scaleProportionallyUpOrDown
@@ -230,7 +230,9 @@ private final class AppVolumeRowView: NSView {
             sliderHost.heightAnchor.constraint(equalToConstant: 22),
             bottomRow.widthAnchor.constraint(equalTo: stack.widthAnchor),
             stack.topAnchor.constraint(equalTo: topAnchor, constant: 7),
-            stack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -7),
+            /* Tighter than the top: the separator below carries its own
+               spacing, and 7pt + that read as a hole under the slider. */
+            stack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3),
             stack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 14),
             stack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14),
         ])

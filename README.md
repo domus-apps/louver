@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Assets/banner.png" alt="Louver — A volume slider for every app" />
+</p>
+
 # Louver
 
 Per-app volume control for the Mac. Part of [Domus](https://domus-apps.com).
