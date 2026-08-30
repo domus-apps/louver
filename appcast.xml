@@ -5,5 +5,27 @@
   <channel>
     <title>Louver</title>
     <link>https://github.com/domus-apps/louver</link>
+    <item>
+      <title>Louver v1.0.0</title>
+      <link>https://github.com/domus-apps/louver/releases/tag/v1.0.0</link>
+      <pubDate>Sun, 30 Aug 2026 14:35:38 +0000</pubDate>
+      <description><![CDATA[
+<p>The first release.</p>
+<ul>
+<li>A volume slider and mute for every app, right in the menu bar — the one control macOS never shipped.</li>
+<li>Built on Core Audio process taps: no drivers, no kernel extensions, nothing to install beyond the app.</li>
+<li>Apps at full volume are untouched — their audio passes straight through the system as if Louver weren't running.</li>
+<li>Chrome- and Electron-style helper processes are grouped under the app you actually see.</li>
+<li>Volumes are remembered per app and reapplied when the app plays again, across relaunches.</li>
+<li>Follows the default output everywhere: switch to AirPods mid-song and the levels come along.</li>
+</ul>      ]]></description>
+      <sparkle:version>1</sparkle:version>
+      <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/louver/releases/download/v1.0.0/Louver.zip"
+        sparkle:edSignature="poaT7yIvTHQ2IKqEn7piqddXuuX0lR1NcaDsL6/WZPgBUA7ezjrA10CNEEPAWq1vpSF4VzThLEGINZYiotRRAQ==" length="3138505"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
