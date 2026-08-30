@@ -92,15 +92,17 @@ func drawIconBackground(_ cg: CGContext) {
     cg.saveGState()
     cg.setShadow(offset: CGSize(width: 0, height: -12), blur: 36, color: color(0x000000, 0.28))
     cg.addPath(shape)
-    cg.setFillColor(color(0x5E8F2A))
+    cg.setFillColor(color(0x63AC28))
     cg.fillPath()
     cg.restoreGState()
 
-    // A single restrained moss gradient, in the language of macOS system
-    // icons: the background recedes, the glyph is the hero.
+    /* A single restrained leaf-green gradient, in the language of macOS
+       system icons and the sibling apps (Coffer: 4FE3A2→0FA25F, Oriel:
+       5AAEFF→1C66EC): both stops stay vivid and saturated — the field
+       reads as one solid color with depth, never light-fading-to-dark. */
     linearGradient(
         cg, in: shape,
-        colors: [color(0xA9D653), color(0x47761B)],
+        colors: [color(0x9BD948), color(0x4C9C1D)],
         from: CGPoint(x: 512, y: bgRect.maxY), to: CGPoint(x: 512, y: bgRect.minY)
     )
     // Barely-there top light for depth
