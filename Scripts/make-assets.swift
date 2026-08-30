@@ -4,12 +4,11 @@
 // reproducible from source. Run: swift Scripts/make-assets.swift
 // Then:  iconutil -c icns Assets/AppIcon.iconset -o Assets/AppIcon.icns
 //
-// Styled after macOS Tahoe's Liquid Glass icon language, sibling to Oriel's
-// and Transom's icons: the same continuous-curvature squircle, frosted-glass
-// glyph (real gaussian-blurred backdrop via CoreImage), specular rim
-// highlights, and soft layered shadows — here a glass lighthouse on a night
-// indigo gradient, its warm beacon sweeping both ways: the light that never
-// goes to sleep.
+// Styled after macOS Tahoe's Liquid Glass icon language, sibling to the other
+// Domus icons: the same continuous-curvature squircle, frosted-glass glyph
+// (real gaussian-blurred backdrop via CoreImage), specular rim highlights,
+// and soft layered shadows — here four glass louver slats over warm light on
+// a moss-green gradient: the slats that meter what passes through.
 
 import AppKit
 import CoreImage
@@ -73,23 +72,6 @@ func squircle(in rect: CGRect) -> CGPath {
     Path(roundedRect: rect, cornerRadius: rect.width * (214.5 / 824), style: .continuous).cgPath
 }
 
-/// Convex polygon with rounded corners (for the tapered lighthouse tower).
-func roundedPolygon(_ points: [CGPoint], radius: CGFloat) -> CGPath {
-    let path = CGMutablePath()
-    let last = points.count - 1
-    path.move(to: CGPoint(x: (points[0].x + points[last].x) / 2, y: (points[0].y + points[last].y) / 2))
-    for i in 0...last {
-        let next = points[(i + 1) % points.count]
-        path.addArc(
-            tangent1End: points[i],
-            tangent2End: CGPoint(x: (points[i].x + next.x) / 2, y: (points[i].y + next.y) / 2),
-            radius: radius
-        )
-    }
-    path.closeSubpath()
-    return path
-}
-
 func gaussianBlur(_ image: CGImage, radius: CGFloat) -> CGImage {
     let ci = CIImage(cgImage: image)
     let blurred = ci.clampedToExtent()
@@ -103,22 +85,22 @@ func gaussianBlur(_ image: CGImage, radius: CGFloat) -> CGImage {
 let designRect = CGRect(x: 0, y: 0, width: 1024, height: 1024)
 let bgRect = CGRect(x: 100, y: 100, width: 824, height: 824) // standard macOS icon grid
 
-/// Background layer: squircle, night indigo gradient, top sheen, outer shadow.
+/// Background layer: squircle, moss-green gradient, top sheen, outer shadow.
 func drawIconBackground(_ cg: CGContext) {
     let shape = squircle(in: bgRect)
 
     cg.saveGState()
     cg.setShadow(offset: CGSize(width: 0, height: -12), blur: 36, color: color(0x000000, 0.28))
     cg.addPath(shape)
-    cg.setFillColor(color(0x4B30D6))
+    cg.setFillColor(color(0x5E8F2A))
     cg.fillPath()
     cg.restoreGState()
 
-    // A single restrained night-indigo gradient, in the language of macOS
-    // system icons: the background recedes, the glyph is the hero.
+    // A single restrained moss gradient, in the language of macOS system
+    // icons: the background recedes, the glyph is the hero.
     linearGradient(
         cg, in: shape,
-        colors: [color(0x8B78FF), color(0x4526C8)],
+        colors: [color(0xA9D653), color(0x47761B)],
         from: CGPoint(x: 512, y: bgRect.maxY), to: CGPoint(x: 512, y: bgRect.minY)
     )
     // Barely-there top light for depth
@@ -148,9 +130,9 @@ func drawGlassShape(
 ) {
     // Drop shadow (opaque fill, replaced by the glass interior right after)
     cg.saveGState()
-    cg.setShadow(offset: CGSize(width: 0, height: -shadowBlur * 0.4), blur: shadowBlur, color: color(0x160A54, shadowAlpha))
+    cg.setShadow(offset: CGSize(width: 0, height: -shadowBlur * 0.4), blur: shadowBlur, color: color(0x1C3A08, shadowAlpha))
     cg.addPath(path)
-    cg.setFillColor(color(0xA394F0))
+    cg.setFillColor(color(0xD8ECAE))
     cg.fillPath()
     cg.restoreGState()
 
@@ -169,96 +151,46 @@ func drawGlassShape(
     glassRim(cg, around: path, width: rimWidth, bounds: bounds, top: rimTop, bottom: rimBottom)
 }
 
-// The glyph: a lighthouse — base slab, tapered tower, lantern room, and a
-// warm beacon sweeping both ways. The tower keeps the siblings' frosted
-// glass; the beams and beacon carry the warm accent (Transom's sun hues).
-let baseSlab = CGRect(x: 352, y: 220, width: 320, height: 64)
-let towerPoints = [
-    CGPoint(x: 392, y: 284), CGPoint(x: 632, y: 284),
-    CGPoint(x: 600, y: 634), CGPoint(x: 424, y: 634),
-]
-let towerBounds = CGRect(x: 392, y: 284, width: 240, height: 350)
-let lantern = CGRect(x: 420, y: 634, width: 184, height: 96)
-let lanternCap = CGRect(x: 452, y: 730, width: 120, height: 32)
-let beaconCenter = CGPoint(x: 512, y: 682)
+// The glyph: four louver slats — frosted glass bars, each tilted the few
+// degrees an opened louver sits at, over warm light pouring through from
+// behind. The slats meter the light the way Louver meters each app's sound.
+let slatCenterYs: [CGFloat] = [710, 580, 450, 320]
+let slatSize = CGSize(width: 520, height: 76)
+let slatTilt: CGFloat = -6 * .pi / 180
 
-/// The warm light, drawn on the background before any glass: two beams and
-/// a soft halo, so the frosted tower blurs *lit* air behind it.
-func drawBeams(_ cg: CGContext) {
-    for direction: CGFloat in [-1, 1] {
-        let edgeX = 512 + direction * 406
-        let beam = CGMutablePath()
-        beam.move(to: beaconCenter)
-        beam.addLine(to: CGPoint(x: edgeX, y: beaconCenter.y - 104))
-        beam.addLine(to: CGPoint(x: edgeX, y: beaconCenter.y + 104))
-        beam.closeSubpath()
-        linearGradient(
-            cg, in: beam,
-            colors: [color(0xFFE3A0, 0.85), color(0xFFE3A0, 0.04)],
-            from: beaconCenter, to: CGPoint(x: edgeX, y: beaconCenter.y)
+func slatPath(centerY: CGFloat) -> CGPath {
+    let rect = CGRect(
+        x: 512 - slatSize.width / 2, y: centerY - slatSize.height / 2,
+        width: slatSize.width, height: slatSize.height)
+    var transform = CGAffineTransform(translationX: 512, y: centerY)
+        .rotated(by: slatTilt)
+        .translatedBy(x: -512, y: -centerY)
+    return CGPath(
+        roundedRect: rect, cornerWidth: slatSize.height / 2,
+        cornerHeight: slatSize.height / 2, transform: &transform)
+}
+
+func slatBounds(centerY: CGFloat) -> CGRect {
+    slatPath(centerY: centerY).boundingBox
+}
+
+/// The warm light behind the slats, drawn on the background before any
+/// glass: the frosted slats blur *lit* air, not a plain gradient.
+func drawLight(_ cg: CGContext) {
+    radialBlob(cg, center: CGPoint(x: 512, y: 515), radius: 340, color: color(0xFFF6C9, 0.55))
+    radialBlob(cg, center: CGPoint(x: 512, y: 515), radius: 170, color: color(0xFFFBE4, 0.5))
+}
+
+func drawSlats(_ cg: CGContext, backdrop: CGImage, boost: Bool) {
+    for centerY in slatCenterYs {
+        drawGlassShape(
+            cg, path: slatPath(centerY: centerY), bounds: slatBounds(centerY: centerY),
+            backdrop: backdrop,
+            tintTop: boost ? 0.96 : 0.9, tintBottom: boost ? 0.86 : 0.72,
+            rimWidth: 5, rimTop: 1.0, rimBottom: 0.28,
+            shadowBlur: 34, shadowAlpha: 0.3
         )
     }
-    radialBlob(cg, center: beaconCenter, radius: 200, color: color(0xFFDD8F, 0.5))
-}
-
-func drawBaseSlab(_ cg: CGContext, backdrop: CGImage, boost: Bool) {
-    drawGlassShape(
-        cg, path: CGPath(roundedRect: baseSlab, cornerWidth: 24, cornerHeight: 24, transform: nil),
-        bounds: baseSlab, backdrop: backdrop,
-        tintTop: boost ? 0.52 : 0.4, tintBottom: boost ? 0.4 : 0.26,
-        rimWidth: 4, rimTop: 0.7, rimBottom: 0.12,
-        shadowBlur: 30, shadowAlpha: 0.22
-    )
-}
-
-func drawTower(_ cg: CGContext, backdrop: CGImage, boost: Bool) {
-    drawGlassShape(
-        cg, path: roundedPolygon(towerPoints, radius: 26),
-        bounds: towerBounds, backdrop: backdrop,
-        tintTop: boost ? 0.98 : 0.94, tintBottom: boost ? 0.9 : 0.8,
-        rimWidth: 5, rimTop: 1.0, rimBottom: 0.3,
-        shadowBlur: 46, shadowAlpha: 0.32
-    )
-    drawTowerWindows(cg)
-}
-
-func drawLanternRoom(_ cg: CGContext, backdrop: CGImage, boost: Bool) {
-    drawGlassShape(
-        cg, path: CGPath(roundedRect: lantern, cornerWidth: 34, cornerHeight: 34, transform: nil),
-        bounds: lantern, backdrop: backdrop,
-        tintTop: boost ? 0.9 : 0.8, tintBottom: boost ? 0.8 : 0.62,
-        rimWidth: 5, rimTop: 1.0, rimBottom: 0.35,
-        shadowBlur: 30, shadowAlpha: 0.25
-    )
-    drawGlassShape(
-        cg, path: CGPath(roundedRect: lanternCap, cornerWidth: 16, cornerHeight: 16, transform: nil),
-        bounds: lanternCap, backdrop: backdrop,
-        tintTop: boost ? 0.98 : 0.94, tintBottom: boost ? 0.9 : 0.8,
-        rimWidth: 4, rimTop: 1.0, rimBottom: 0.3,
-        shadowBlur: 20, shadowAlpha: 0.2
-    )
-    drawBeacon(cg)
-}
-
-/// Ghosted window slits on the tower. Shared between the rendered icon and
-/// the flat Icon Composer layers — like Oriel's content bars, flat and quiet.
-func drawTowerWindows(_ cg: CGContext) {
-    cg.setFillColor(color(0x5240D8, 0.32))
-    for y in [CGFloat(516), 412] {
-        let slit = CGRect(x: 512 - 17, y: y - 27, width: 34, height: 54)
-        cg.addPath(CGPath(roundedRect: slit, cornerWidth: 15, cornerHeight: 15, transform: nil))
-    }
-    cg.fillPath()
-}
-
-/// The lamp itself: a warm two-stop disc, flat like Oriel's traffic lights.
-func drawBeacon(_ cg: CGContext) {
-    let dot = CGRect(x: beaconCenter.x - 30, y: beaconCenter.y - 30, width: 60, height: 60)
-    linearGradient(
-        cg, in: CGPath(ellipseIn: dot, transform: nil),
-        colors: [color(0xFFF4CB), color(0xFFB545)],
-        from: CGPoint(x: dot.midX, y: dot.maxY), to: CGPoint(x: dot.midX, y: dot.minY)
-    )
 }
 
 /// Renders the complete icon at `px` and returns the bitmap.
@@ -287,34 +219,20 @@ func makeIcon(px: Int) -> NSBitmapImageRep {
         cg.restoreGState()
     }
 
-    // Scene 1: background + light (beams under the glass, so the frosted
-    // tower blurs lit air, not a plain gradient).
+    // Scene 1: background + the warm light the slats will frost over.
     let bgRep = makeBitmap(px, px)
     withContext(bgRep) { cg in
         cg.scaleBy(x: scale, y: scale)
         drawIconBackground(cg)
-        drawGlyph(cg) { drawBeams($0) }
+        drawGlyph(cg) { drawLight($0) }
     }
     let backdrop = gaussianBlur(bgRep.cgImage!, radius: blurRadius)
-
-    // Scene 2: base + tower, so the lantern's backdrop blur includes the
-    // tower below it — glass over glass.
-    let midRep = makeBitmap(px, px)
-    withContext(midRep) { cg in
-        cg.scaleBy(x: scale, y: scale)
-        cg.draw(bgRep.cgImage!, in: designRect)
-        drawGlyph(cg) {
-            drawBaseSlab($0, backdrop: backdrop, boost: boost)
-            drawTower($0, backdrop: backdrop, boost: boost)
-        }
-    }
-    let midBackdrop = gaussianBlur(midRep.cgImage!, radius: blurRadius)
 
     let rep = makeBitmap(px, px)
     withContext(rep) { cg in
         cg.scaleBy(x: scale, y: scale)
-        cg.draw(midRep.cgImage!, in: designRect)
-        drawGlyph(cg) { drawLanternRoom($0, backdrop: midBackdrop, boost: boost) }
+        cg.draw(bgRep.cgImage!, in: designRect)
+        drawGlyph(cg) { drawSlats($0, backdrop: backdrop, boost: boost) }
     }
     return rep
 }
@@ -337,30 +255,21 @@ func makeIconLayer(_ draw: (CGContext) -> Void) -> NSBitmapImageRep {
     return rep
 }
 
-func drawFlatBeams(_ cg: CGContext) {
-    drawBeams(cg)
-    cg.addPath(CGPath(roundedRect: baseSlab, cornerWidth: 24, cornerHeight: 24, transform: nil))
-    cg.setFillColor(color(0xFFFFFF, 0.4))
-    cg.fillPath()
+func drawFlatLight(_ cg: CGContext) {
+    drawLight(cg)
 }
 
-func drawFlatLighthouse(_ cg: CGContext) {
+func drawFlatSlats(_ cg: CGContext) {
     cg.setFillColor(color(0xFFFFFF))
-    cg.addPath(roundedPolygon(towerPoints, radius: 26))
+    for centerY in slatCenterYs {
+        cg.addPath(slatPath(centerY: centerY))
+    }
     cg.fillPath()
-    drawTowerWindows(cg)
-    cg.setFillColor(color(0xFFFFFF, 0.85))
-    cg.addPath(CGPath(roundedRect: lantern, cornerWidth: 34, cornerHeight: 34, transform: nil))
-    cg.fillPath()
-    cg.setFillColor(color(0xFFFFFF))
-    cg.addPath(CGPath(roundedRect: lanternCap, cornerWidth: 16, cornerHeight: 16, transform: nil))
-    cg.fillPath()
-    drawBeacon(cg)
 }
 
 // MARK: - Shared banner elements
 
-/// A faint four-point twinkle — the night sky the lighthouse watches over.
+/// A faint four-point twinkle, the same quiet sky the sibling banners share.
 func sparklePath(center: CGPoint, radius: CGFloat) -> CGPath {
     let path = CGMutablePath()
     let n = CGPoint(x: center.x, y: center.y + radius)
@@ -384,9 +293,9 @@ func drawSparkles(_ cg: CGContext, _ sparkles: [(x: CGFloat, y: CGFloat, r: CGFl
     }
 }
 
-let pillLabelColor = NSColor(srgbRed: 0.85, green: 0.83, blue: 0.98, alpha: 1)
-let taglineColor = NSColor(srgbRed: 0.78, green: 0.75, blue: 0.95, alpha: 1)
-let tagline = "One-click sleep blocker for macOS"
+let pillLabelColor = NSColor(srgbRed: 0.88, green: 0.94, blue: 0.8, alpha: 1)
+let taglineColor = NSColor(srgbRed: 0.82, green: 0.91, blue: 0.72, alpha: 1)
+let tagline = "A volume slider for every app"
 
 func pillText(_ label: String, fontSize: CGFloat) -> NSAttributedString {
     NSAttributedString(string: label, attributes: [
@@ -424,14 +333,14 @@ func drawPill(
     return pill.maxX
 }
 
-let pillLabels = ["One click", "30 min – 8 hr timers", "No permissions"]
+let pillLabels = ["A slider per app", "Mute anything", "No drivers"]
 
 // MARK: - Banner (1800 x 600)
 
 func drawBanner(_ cg: CGContext, icon: CGImage) {
     let canvas = CGRect(x: 0, y: 0, width: 1800, height: 600)
     let frame = CGPath(roundedRect: canvas, cornerWidth: 40, cornerHeight: 40, transform: nil)
-    // Same dark navy as the siblings' banners: one family, three accents.
+    // Same dark navy as the siblings' banners: one family, many accents.
     linearGradient(
         cg, in: frame,
         colors: [color(0x1E1844), color(0x0F0B26)],
@@ -452,7 +361,7 @@ func drawBanner(_ cg: CGContext, icon: CGImage) {
     cg.draw(icon, in: CGRect(x: 100, y: 118, width: 364, height: 364))
 
     // Wordmark + tagline
-    let title = NSAttributedString(string: "Pharos", attributes: [
+    let title = NSAttributedString(string: "Louver", attributes: [
         .font: NSFont.systemFont(ofSize: 130, weight: .bold),
         .foregroundColor: NSColor.white,
     ])
@@ -497,7 +406,7 @@ func drawSocialPreview(_ cg: CGContext, icon: CGImage) {
     cg.draw(icon, in: CGRect(x: canvas.midX - 125, y: 355, width: 250, height: 250))
 
     drawCentered(
-        NSAttributedString(string: "Pharos", attributes: [
+        NSAttributedString(string: "Louver", attributes: [
             .font: NSFont.systemFont(ofSize: 100, weight: .bold),
             .foregroundColor: NSColor.white,
         ]), y: 238)
@@ -539,8 +448,8 @@ savePNG(master, "Assets/icon-1024.png")
 
 // Icon Composer layers for the macOS 26+ .icon document
 try? fm.createDirectory(atPath: "Assets/AppIcon.icon/Assets", withIntermediateDirectories: true)
-savePNG(makeIconLayer(drawFlatBeams), "Assets/AppIcon.icon/Assets/back.png")
-savePNG(makeIconLayer(drawFlatLighthouse), "Assets/AppIcon.icon/Assets/front.png")
+savePNG(makeIconLayer(drawFlatLight), "Assets/AppIcon.icon/Assets/back.png")
+savePNG(makeIconLayer(drawFlatSlats), "Assets/AppIcon.icon/Assets/front.png")
 
 let bannerIcon = makeIcon(px: 728).cgImage!
 let banner = makeBitmap(1800, 600)
