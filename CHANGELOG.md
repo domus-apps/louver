@@ -4,6 +4,10 @@ All notable changes to Louver are documented here. The release workflow publishe
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.0.1
+
+- Tightened the gap between the volume sliders and the menu items below them.
+
 ## 1.0.0
 
 The first release.
