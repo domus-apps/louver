@@ -10,10 +10,17 @@
 		<string>앱 볼륨</string>
 		<string>app volume</string>
 	</array>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
 	<key>CFBundleExecutable</key>
 	<string>Louver</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.jhaemin.louver</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ko</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>Louver</string>
 	<key>CFBundlePackageType</key>

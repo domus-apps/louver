@@ -17,13 +17,13 @@ final class OnboardingWindowController: NSWindowController, NSWindowDelegate {
 
     private let statusLabel = NSTextField(labelWithString: "")
     private lazy var requestButton = NSButton(
-        title: "Enable Per-App Volume", target: self,
+        title: L("Enable Per-App Volume"), target: self,
         action: #selector(requestAccess))
     private lazy var settingsLink = NSButton(
-        title: "Open Privacy & Security Settings…", target: self,
+        title: L("Open Privacy & Security Settings…"), target: self,
         action: #selector(openSystemSettings))
     private lazy var startButton = NSButton(
-        title: "Start Using Louver", target: self, action: #selector(start))
+        title: L("Start Using Louver"), target: self, action: #selector(start))
 
     init(onComplete: @escaping () -> Void) {
         self.onComplete = onComplete
@@ -63,14 +63,14 @@ final class OnboardingWindowController: NSWindowController, NSWindowDelegate {
     // MARK: - Content
 
     private func makeContent() -> NSView {
-        let title = NSTextField(labelWithString: "Welcome to Louver")
+        let title = NSTextField(labelWithString: L("Welcome to Louver"))
         title.font = .systemFont(ofSize: 30, weight: .bold)
 
         let intro = NSTextField(
-            wrappingLabelWithString:
+            wrappingLabelWithString: L(
                 "Louver gives every app its own volume. Open the menu bar icon "
-                + "for a slider and mute button per app — apps at full volume "
-                + "are untouched, and nothing is recorded or stored.")
+                    + "for a slider and mute button per app — apps at full volume "
+                    + "are untouched, and nothing is recorded or stored."))
         intro.font = .systemFont(ofSize: 14)
         intro.textColor = .secondaryLabelColor
         intro.alignment = .center
@@ -84,7 +84,7 @@ final class OnboardingWindowController: NSWindowController, NSWindowDelegate {
         ])
 
         let hint = NSTextField(
-            labelWithString: "Turn an app down and it stays that way until you turn it back up")
+            labelWithString: L("Turn an app down and it stays that way until you turn it back up"))
         hint.font = .systemFont(ofSize: 14)
         hint.textColor = .secondaryLabelColor
 
@@ -148,8 +148,8 @@ final class OnboardingWindowController: NSWindowController, NSWindowDelegate {
         let granted = Self.probeAudioCaptureAccess()
         statusLabel.stringValue =
             granted
-            ? "✓ System audio access granted"
-            : "Louver needs System Audio Recording access to adjust each app's volume."
+            ? L("✓ System audio access granted")
+            : L("Louver needs System Audio Recording access to adjust each app's volume.")
         statusLabel.textColor = granted ? .systemGreen : .labelColor
         requestButton.isHidden = granted
         settingsLink.isHidden = granted

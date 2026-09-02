@@ -1,0 +1,32 @@
+/* Louver 한국어 — 영어 원문이 키입니다 (Localization.swift 참고) */
+
+/* 메뉴 */
+"No apps are playing audio" = "소리를 내는 앱이 없습니다";
+"Settings…" = "설정…";
+"Check for Updates…" = "업데이트 확인…";
+"Quit Louver" = "Louver 종료";
+"Window" = "윈도우";
+"Close Window" = "윈도우 닫기";
+"Minimize" = "축소";
+"Mute" = "음소거";
+"Unmute" = "음소거 해제";
+"Louver — adjusting app volumes" = "Louver — 앱 음량 조절 중";
+
+/* 설정 */
+"General" = "일반";
+"Launch at login" = "로그인 시 실행";
+"Available in the bundled app only (Scripts/bundle.sh)." = "번들 앱에서만 사용할 수 있습니다 (Scripts/bundle.sh).";
+"Hide menu bar icon" = "메뉴 막대 아이콘 숨기기";
+"While hidden, launch Louver again to open Settings. The app appears in the Dock only while this window is open." = "숨긴 동안에는 Louver를 다시 실행하면 설정이 열립니다. 이 창이 열려 있는 동안에만 앱이 Dock에 나타납니다.";
+"Updates" = "업데이트";
+"Version" = "버전";
+
+/* 온보딩 */
+"Welcome to Louver" = "Louver에 오신 것을 환영합니다";
+"Louver gives every app its own volume. Open the menu bar icon for a slider and mute button per app — apps at full volume are untouched, and nothing is recorded or stored." = "Louver는 앱마다 자기만의 음량을 줍니다. 메뉴 막대 아이콘을 열면 앱별 슬라이더와 음소거 버튼이 있습니다 — 음량 100%인 앱은 건드리지 않고, 어떤 소리도 녹음·저장되지 않습니다.";
+"Turn an app down and it stays that way until you turn it back up" = "한 번 낮춘 앱은 다시 올릴 때까지 그대로 유지됩니다";
+"Enable Per-App Volume" = "앱별 음량 켜기";
+"Open Privacy & Security Settings…" = "개인정보 보호 및 보안 설정 열기…";
+"Start Using Louver" = "Louver 시작하기";
+"✓ System audio access granted" = "✓ 시스템 오디오 접근이 허용되었습니다";
+"Louver needs System Audio Recording access to adjust each app's volume." = "앱별 음량을 조절하려면 Louver에 시스템 오디오 녹음 접근 권한이 필요합니다.";

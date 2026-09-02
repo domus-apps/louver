@@ -11,6 +11,12 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp .build/release/Louver "$APP/Contents/MacOS/Louver"
 cp Scripts/Info.plist "$APP/Contents/Info.plist"
 
+# Localizations: SwiftPM packs the .lproj string tables into a resource
+# bundle; the app resolves it from Contents/Resources by hand (see
+# Sources/Louver/Localization.swift — the generated accessor can't be
+# trusted across toolchains).
+cp -R .build/release/Louver_Louver.bundle "$APP/Contents/Resources/"
+
 # Embed Sparkle.framework (auto-update). The binary references it via
 # @rpath/../Frameworks (see Package.swift linkerSettings).
 SPARKLE=$(find .build/artifacts -type d -name Sparkle.framework -path "*macos*" | head -1)

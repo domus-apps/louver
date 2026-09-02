@@ -9,7 +9,7 @@ enum SettingsPane: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .general: "General"
+        case .general: L("General")
         }
     }
 
@@ -251,11 +251,11 @@ final class GeneralPaneViewController: NSViewController {
     }
 
     private lazy var launchAtLoginCheckbox = NSButton(
-        checkboxWithTitle: "Launch at login", target: self,
+        checkboxWithTitle: L("Launch at login"), target: self,
         action: #selector(toggleLaunchAtLogin))
 
     private lazy var hideMenuBarIconCheckbox = NSButton(
-        checkboxWithTitle: "Hide menu bar icon", target: self,
+        checkboxWithTitle: L("Hide menu bar icon"), target: self,
         action: #selector(toggleHideMenuBarIcon))
 
     /* SMAppService needs a real app bundle; a bare `swift run` binary has no
@@ -277,14 +277,14 @@ final class GeneralPaneViewController: NSViewController {
             launchAtLoginCheckbox.state = SMAppService.mainApp.status == .enabled ? .on : .off
         } else {
             launchAtLoginCheckbox.isEnabled = false
-            views.append(note("Available in the bundled app only (Scripts/bundle.sh)."))
+            views.append(note(L("Available in the bundled app only (Scripts/bundle.sh).")))
         }
 
         hideMenuBarIconCheckbox.state = AppPreferences.isMenuBarIconHidden ? .on : .off
         views.append(hideMenuBarIconCheckbox)
-        views.append(note(
+        views.append(note(L(
             "While hidden, launch Louver again to open Settings. "
-                + "The app appears in the Dock only while this window is open."))
+                + "The app appears in the Dock only while this window is open.")))
 
         /* Updates. The menu bar icon (and its Check for Updates item) can be
            hidden, so the settings window must offer the check too. */
@@ -292,7 +292,7 @@ final class GeneralPaneViewController: NSViewController {
         let info = Bundle.main.infoDictionary
         if let version = info?["CFBundleShortVersionString"] as? String {
             let build = (info?["CFBundleVersion"] as? String).map { " (\($0))" } ?? ""
-            views.append(note("Version \(version)\(build)"))
+            views.append(note(L("Version") + " \(version)\(build)"))
         }
 
         let stack = NSStackView(views: views)

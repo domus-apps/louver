@@ -48,7 +48,7 @@ final class VolumeMenu: NSObject, NSMenuDelegate {
         let apps = listedApps()
         if apps.isEmpty {
             let empty = NSMenuItem(
-                title: "No apps are playing audio", action: nil, keyEquivalent: "")
+                title: L("No apps are playing audio"), action: nil, keyEquivalent: "")
             empty.isEnabled = false
             menu.addItem(empty)
         }
@@ -63,14 +63,14 @@ final class VolumeMenu: NSObject, NSMenuDelegate {
 
         menu.addItem(.separator())
         let settingsItem = NSMenuItem(
-            title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+            title: L("Settings…"), action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
         menu.addItem(makeUpdaterItem())
         menu.addItem(.separator())
         menu.addItem(
             NSMenuItem(
-                title: "Quit Louver", action: #selector(NSApplication.terminate(_:)),
+                title: L("Quit Louver"), action: #selector(NSApplication.terminate(_:)),
                 keyEquivalent: "q"))
     }
 
@@ -264,7 +264,7 @@ private final class AppVolumeRowView: NSView {
         nameLabel.stringValue = model.name
         muteButton.image = NSImage(
             systemSymbolName: model.muted ? "speaker.slash.fill" : "speaker.fill",
-            accessibilityDescription: model.muted ? "unmute" : "mute"
+            accessibilityDescription: model.muted ? L("Unmute") : L("Mute")
         )?.withSymbolConfiguration(.init(pointSize: 14, weight: .medium))
         muteButton.contentTintColor =
             model.muted ? .controlAccentColor : speakerTint
