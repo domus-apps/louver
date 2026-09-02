@@ -4,6 +4,20 @@ All notable changes to Louver are documented here. The release workflow publishe
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.0.2
+
+### Added
+
+- Louver now speaks Korean — the menu, Settings, and onboarding follow the macOS language, with English everywhere else.
+
+### Changed
+
+- Settings redesigned in the system's grouped style — section headers, rounded boxes, and switches, like Xcode's settings — with the version and build number shown under Check for Updates.
+
+### Fixed
+
+- The speaker icons beside each volume slider vanished in Dark Mode when Louver had been launched in Light Mode (and dimmed the other way round): their tint was frozen at launch instead of following the appearance. They now track it live.
+
 ## 1.0.1
 
 - Tightened the gap between the volume sliders and the menu items below them.
