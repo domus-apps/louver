@@ -165,6 +165,16 @@ final class VolumeRowModel: ObservableObject, Identifiable {
 
 // MARK: - Row view
 
+/* The flanking speakers' tint. Not `labelColor.withAlphaComponent(_:)`:
+   that resolves the dynamic label color against the appearance current at
+   the call and returns a *static* color, so rows built under one
+   appearance came out black-on-black once the system switched to dark
+   (or vice versa). A dynamic provider re-resolves at draw time. */
+private let speakerTint = NSColor(name: nil) { appearance in
+    let dark = appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+    return (dark ? NSColor.white : NSColor.black).withAlphaComponent(0.65)
+}
+
 /* One app's row: icon + name + playing indicator over the native volume
    slider, with the system's flanking speakers (the quiet one doubles as
    the mute toggle). AppKit layout so the slider strip's exact frame is
@@ -193,7 +203,7 @@ private final class AppVolumeRowView: NSView {
         loudSpeaker.image = NSImage(
             systemSymbolName: "speaker.wave.3.fill", accessibilityDescription: nil
         )?.withSymbolConfiguration(.init(pointSize: 14, weight: .medium))
-        loudSpeaker.contentTintColor = NSColor.labelColor.withAlphaComponent(0.65)
+        loudSpeaker.contentTintColor = speakerTint
 
         /* Plain hosting: the slider receives its events through normal
            dispatch (pressed-knob glass and all); LouverApplication's
@@ -257,7 +267,7 @@ private final class AppVolumeRowView: NSView {
             accessibilityDescription: model.muted ? "unmute" : "mute"
         )?.withSymbolConfiguration(.init(pointSize: 14, weight: .medium))
         muteButton.contentTintColor =
-            model.muted ? .controlAccentColor : NSColor.labelColor.withAlphaComponent(0.65)
+            model.muted ? .controlAccentColor : speakerTint
     }
 
     @objc private func toggleMute() {
