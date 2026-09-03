@@ -8,11 +8,11 @@ Keep each bullet on a single line: release notes render line breaks literally (b
 
 ### Added
 
-- Louver now speaks Korean — the menu, Settings, and onboarding follow the macOS language, with English everywhere else.
+- Louver now speaks Korean: the menu, Settings, and onboarding follow the macOS language, with English everywhere else.
 
 ### Changed
 
-- Settings redesigned in the system's grouped style — section headers, rounded boxes, and switches, like Xcode's settings — with the version and build number shown under Check for Updates.
+- Settings redesigned in the system's grouped style (section headers, rounded boxes, and switches, like Xcode's settings), with the version and build number shown under Check for Updates.
 
 ### Fixed
 
@@ -26,9 +26,9 @@ Keep each bullet on a single line: release notes render line breaks literally (b
 
 The first release.
 
-- A volume slider and mute for every app, right in the menu bar — the one control macOS never shipped.
+- A volume slider and mute for every app, right in the menu bar: the one control macOS never shipped.
 - Built on Core Audio process taps: no drivers, no kernel extensions, nothing to install beyond the app.
-- Apps at full volume are untouched — their audio passes straight through the system as if Louver weren't running.
+- Apps at full volume are untouched; their audio passes straight through the system as if Louver weren't running.
 - Chrome- and Electron-style helper processes are grouped under the app you actually see.
 - Volumes are remembered per app and reapplied when the app plays again, across relaunches.
 - Follows the default output everywhere: switch to AirPods mid-song and the levels come along.
